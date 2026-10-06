@@ -64,7 +64,7 @@ A 128-song anime opening/ending bracket ("anisong" tournament) to play with frie
 - AnimeThemes playlist counts, aggregated per franchise across all its themes (v1 only looked at one season).
 
 ### Local tooling available
-ffmpeg, node, python 3.12, gh, git (Git Bash). The folder is not a git repo yet.
+ffmpeg, node, python 3.12, gh (logged in as Henrique-FB), git (Git Bash).
 
 ## Decisions (2026-10-06)
 - Played **live on a call**: the user streams their screen and runs the voting. Voting doesn't need
@@ -73,13 +73,13 @@ ffmpeg, node, python 3.12, gh, git (Git Bash). The folder is not a git repo yet.
 - OPs and EDs both allowed. **One song per franchise.** No friends' AniList/MAL lists.
 - **Rejected: GitHub Pages + database.** Too much setup for what the user wants.
 - **Agreed shape: two pages.**
-  1. **Friends' page:** every entry numbered, with search and a play button. A public Claude artifact
-     (no account needed; no db, so no sign-in dependency).
+  1. **Friends' page:** every entry numbered, with search and a play button. No account needed.
   2. **Host page (streamed):** bracket and matches showing the same numbers, so friends can type
      "#42" into search. Plan: a **local HTML file** on the user's PC playing **pre-downloaded videos**.
      No CSP limits and no streaming lag. The 128 videos are ~6.1 GB.
-- Inline video inside the artifact is unverified (CSP). Plan: try `<video>` and fall back to an
-  "open on animethemes.moe" link when it errors.
+- **Update 2026-10-06: no Claude artifacts at all.** The user wants inline video on the friends' page,
+  and the artifact CSP blocks external media. The friends' page therefore moved to **GitHub Pages**,
+  as one static file with no backend.
 
 ## Project layout
 - `scripts/fetch_candidates.py` pulls the top 2,500 AnimeThemes entries by playlist count into `data/candidates.json`.
@@ -92,12 +92,14 @@ ffmpeg, node, python 3.12, gh, git (Git Bash). The folder is not a git repo yet.
 They know most songs, so playback is occasional. Not every match gets played.
 - Templates: `pages/base.css` (shared tokens/cards, v1 look: Dela Gothic One + IBM Plex, magenta/teal),
   `pages/friends.html`, `pages/host.html`. Placeholders: `/*__CSS__*/ /*__SONGS__*/ /*__COVERS__*/`.
-- `python scripts/build_pages.py` writes `dist/friends.html` and `dist/host.html` (~2.4 MB each, covers inlined).
-- **Friends' page** was republished to the **same v1 URL** (already shared "anyone with the link"),
-  with capabilities cleared (`{}`). It has a numbered grid, search (a number matches exactly), and
-  OP/ED filters. "Watch" links to `https://animethemes.moe/anime/<anime_slug>/<slug>`. Inline video
-  isn't possible: the artifact CSP blocks media.
-  To republish: Artifact publish with `url` = the v1 URL and `file_path` = dist/friends.html.
+- `python scripts/build_pages.py` writes `dist/site/index.html` (friends) and `dist/host.html` (~2.4 MB each, covers inlined).
+- **Friends' page: https://henrique-fb.github.io/anisong-128/** (public repo github.com/Henrique-FB/anisong-128).
+  `.github/workflows/pages.yml` runs build_pages.py and deploys `dist/site` on every push to main,
+  so **to update it, commit and push**. `dist/` is gitignored.
+  The page has a numbered grid, search (a number matches exactly), OP/ED filters, and a Play button
+  that opens a modal `<video>` streaming from `v.animethemes.moe`. If a video errors, the modal links
+  to `https://animethemes.moe/anime/<anime_slug>/<slug>`.
+- The old artifact (https://claude.ai/artifact/Kgksn9nVtB1uqSSZt6D8SF) is no longer used.
 - **Host page:** open `dist/host.html` locally. Tabs: Match / Bracket / All songs. Keys 1 and 2 pick
   the left/right winner (arrow keys deliberately unbound so seeking a video can't pick a winner).
   Videos play from `dist/videos/<basename>` and fall back to `v.animethemes.moe` on error.
@@ -108,5 +110,5 @@ They know most songs, so playback is occasional. Not every match gets played.
 - The local host page has no artifact shell, so base.css carries its own `[hidden]{display:none!important}`.
   Without it, the modal backdrop covered the whole page.
 - Fixing a song: edit `data/picks.txt`, then run build_songs.py → fetch_covers.py → build_pages.py,
-  republish friends, and re-run download_videos.py.
+  commit + push (redeploys the friends' page), and re-run download_videos.py.
   Seeds change when picks change, so don't edit picks mid-bracket.
