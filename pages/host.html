@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Anisong 128 Host</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/*__CSS__*/
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.status{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right;display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.status b{color:var(--ink);font-weight:600}
+nav{display:flex;flex-wrap:wrap;gap:6px;position:sticky;top:0;background:var(--bg);padding-block:8px;z-index:5;border-bottom:1px solid var(--line-soft)}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+
+/* match */
+.stage-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px}
+.round-name{font-family:var(--display);font-size:clamp(20px,3vw,28px);line-height:1.1}
+.round-name small{display:block;font:600 12px var(--mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-top:4px}
+.progress{height:4px;background:var(--line-soft);border-radius:2px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--a);transition:width .3s}
+.stage{display:grid;grid-template-columns:1fr auto 1fr;gap:clamp(8px,2vw,24px);align-items:start}
+.vs{font-family:var(--display);font-size:clamp(22px,4vw,40px);color:var(--muted);align-self:center}
+.fighter{--c:var(--a);--cs:var(--a-soft);background:var(--surface);border:2px solid var(--line-soft);border-radius:14px;padding:clamp(10px,1.5vw,16px);display:flex;flex-direction:column;gap:10px;position:relative;min-width:0}
+.fighter.B{--c:var(--b);--cs:var(--b-soft)}
+.fighter.won{border-color:var(--c);background:var(--cs)}
+.fighter.lost{opacity:.45}
+.media{position:relative;display:grid;grid-template-columns:clamp(70px,9vw,110px) 1fr;gap:14px;align-items:start}
+.media .cover{width:100%;aspect-ratio:220/312;object-fit:cover;border-radius:8px;background:var(--chip);display:block}
+.bignum{font:400 clamp(44px,7vw,84px)/0.9 var(--display);color:var(--c);font-variant-numeric:tabular-nums}
+.ftitle{font-family:var(--display);font-size:clamp(17px,2.2vw,24px);line-height:1.15;overflow-wrap:anywhere}
+.fanime{font-weight:600;font-size:14px;overflow-wrap:anywhere}
+.fartist{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.player-ph{width:100%;aspect-ratio:16/9;border-radius:10px;border:1px dashed var(--line);display:grid;place-items:center;background:var(--bg)}
+.pick{background:var(--c);border-color:var(--c);color:#fff}
+.stage-nav{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center}
+.kbd{font:11px var(--mono);color:var(--muted)}
+.champ{background:var(--ink);color:var(--bg);border-radius:14px;padding:22px;display:grid;grid-template-columns:110px 1fr;gap:18px;align-items:center}
+.champ img{width:110px;border-radius:8px}
+.champ .k{font:600 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;opacity:.7}
+.champ .t{font-family:var(--display);font-size:clamp(22px,4vw,34px);line-height:1.1}
+@media (max-width:760px){.stage{grid-template-columns:1fr}.vs{display:none}}
+
+/* bracket */
+.treewrap{overflow:auto;background:var(--surface);border:1px solid var(--line-soft);border-radius:12px;padding:16px}
+.tree{display:grid;column-gap:28px;width:max-content}
+.colhead{font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-bottom:8px}
+.cell{position:relative;display:flex;align-items:center}
+.cell.join::before{content:"";position:absolute;left:-28px;width:14px;top:25%;bottom:25%;border:1.5px solid var(--line);border-left:none;border-radius:0 4px 4px 0}
+.cell.join::after{content:"";position:absolute;left:-14px;width:14px;top:50%;border-top:1.5px solid var(--line)}
+.bm{width:230px;border:1px solid var(--line);border-radius:8px;background:var(--bg);overflow:hidden;cursor:pointer;font:inherit;color:inherit;padding:0;text-align:left;display:block}
+.bm:hover{border-color:var(--a)}
+.bm.now{border-color:var(--a);box-shadow:0 0 0 2px var(--a-soft)}
+.be{display:grid;grid-template-columns:22px 30px 1fr;gap:6px;align-items:center;height:34px;padding:0 8px 0 4px;font-size:12px}
+.be+.be{border-top:1px solid var(--line-soft)}
+.be img{width:22px;height:31px;object-fit:cover;border-radius:3px}
+.be .s{font:600 12px var(--mono);color:var(--muted);text-align:right}
+.be .n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.be.w{font-weight:600;background:var(--surface)}
+.be.w .s{color:var(--win)}
+.be.l{opacity:.4}
+.be.tbd .n{color:var(--muted);font-style:italic}
+.cell.champcell::before{display:none}
+.cell.champcell::after{left:-28px;width:28px}
+.champbox{width:200px;border:2px solid var(--a);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:6px;background:var(--a-soft)}
+.champbox img{width:100%;border-radius:6px}
+.champbox .k{font:600 11px var(--mono);letter-spacing:.1em;color:var(--a)}
+
+/* songs tab */
+.card .st{position:absolute;bottom:8px;left:8px;font:600 10.5px var(--mono);letter-spacing:.05em;text-transform:uppercase;padding:3px 7px;border-radius:5px;background:var(--win);color:#fff}
+.card .st.out{background:rgba(20,22,45,.82)}
+.card .st.champ{background:var(--a)}
+.card.out img{filter:grayscale(1);opacity:.55}
+
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:13px;z-index:30}
+</style>
+</head><body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>ANISONG <span>128</span></h1>
+      <p class="sub">Host screen. Friends find songs by number on their own page.</p>
+    </div>
+    <div class="status" id="status"></div>
+  </header>
+  <nav id="tabs" aria-label="Views"></nav>
+  <main id="view"></main>
+</div>
+<div class="modal" id="modal" hidden></div>
+<div class="toast" id="toast" hidden></div>
+<input type="file" id="importFile" accept="application/json" hidden>
+
+<script>
+const SONGS = /*__SONGS__*/;
+const COVERS = /*__COVERS__*/;
+const VIDEO_DIR = "videos/";            // pre-downloaded files (scripts/download_videos.py)
+const REMOTE = "https://v.animethemes.moe/";
+const KEY = "anisong128-host-v2";
+const ROUNDS = ["Round of 128","Round of 64","Round of 32","Round of 16","Quarterfinals","Semifinals","Final"];
+const SHORT = ["R128","R64","R32","R16","QF","SF","Final"];
+const bySeed = Object.fromEntries(SONGS.map(s => [s.n, s]));
+
+// Standard seeding: 1v128, 64v65, ... so top seeds meet as late as possible.
+let order = [1];
+while (order.length < 128) { const m = order.length * 2 + 1; order = order.flatMap(x => [x, m - x]); }
+
+let winners = {};
+let view = "match", region = 0, query = "", gFilter = "all", playAt = null;
+
+const mid = (r, m) => `r${r}m${m}`;
+const parse = id => id.match(/r(\d+)m(\d+)/).slice(1).map(Number);
+function entrants(r, m, w = winners) {
+  if (r === 0) return [order[2*m], order[2*m+1]];
+  return [w[mid(r-1, 2*m)] ?? null, w[mid(r-1, 2*m+1)] ?? null];
+}
+function* allMatches() { for (let r = 0; r < 7; r++) for (let m = 0; m < (64 >> r); m++) yield [r, m]; }
+function currentRound() { for (const [r, m] of allMatches()) if (!winners[mid(r, m)]) return r; return 7; }
+function nextOpen(after) {
+  const list = [...allMatches()].filter(([r, m]) => !winners[mid(r, m)] && entrants(r, m).every(Boolean));
+  if (!list.length) return null;
+  if (after) { const i = list.findIndex(([r, m]) => r > after[0] || (r === after[0] && m > after[1])); if (i >= 0) return list[i]; }
+  return list[0];
+}
+function prune(w) {
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const id of Object.keys(w)) { const [r, m] = parse(id); if (!entrants(r, m, w).includes(w[id])) { delete w[id]; changed = true; } }
+  }
+}
+function eliminated() {
+  const out = new Map();
+  for (const [id, w] of Object.entries(winners)) { const [r, m] = parse(id); for (const s of entrants(r, m)) if (s && s !== w) out.set(s, r); }
+  return out;
+}
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.hidden = false;
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, 3000);
+}
+
+// ---------- persistence ----------
+function save() { try { localStorage.setItem(KEY, JSON.stringify({ winners, playAt })); } catch {} }
+function load() {
+  try { const d = JSON.parse(localStorage.getItem(KEY) || "{}"); winners = d.winners || {}; playAt = d.playAt || null; } catch { winners = {}; }
+}
+function exportBracket() {
+  const blob = new Blob([JSON.stringify({ winners }, null, 1)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = `anisong128-bracket-${new Date().toISOString().slice(0, 10)}.json`; a.click();
+  toast("Bracket saved to your Downloads folder.");
+}
+document.getElementById("importFile").addEventListener("change", async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try { const d = JSON.parse(await f.text()); winners = d.winners || {}; prune(winners); playAt = null; save(); render(); toast(`Loaded ${Object.keys(winners).length} results.`); }
+  catch { toast("That file isn't a bracket export."); }
+  e.target.value = "";
+});
+
+function pickWinner(r, m, seed) {
+  const id = mid(r, m), w = { ...winners };
+  const undo = w[id] === seed;
+  if (undo) delete w[id]; else w[id] = seed;
+  prune(w);
+  winners = w;
+  if (!undo) playAt = nextOpen([r, m]) || [r, m];
+  save(); render();
+  if (!undo) toast(`#${seed} ${bySeed[seed].song} advances.`);
+}
+
+// ---------- video ----------
+function videoEl(s, autoplay) {
+  const v = document.createElement("video");
+  v.className = "player"; v.controls = true; v.preload = "auto"; v.playsInline = true;
+  v.src = VIDEO_DIR + s.video;
+  v.dataset.src = "local";
+  v.addEventListener("error", () => {
+    if (v.dataset.src === "local") { v.dataset.src = "remote"; v.src = REMOTE + s.video; if (autoplay) v.play().catch(() => {}); updateSrc(v); }
+  });
+  v.addEventListener("play", () => document.querySelectorAll("video").forEach(o => o !== v && o.pause()));
+  if (autoplay) v.play().catch(() => {});
+  return v;
+}
+function updateSrc(v) { const tag = v.parentElement?.querySelector(".src"); if (tag) tag.textContent = v.dataset.src === "local" ? "playing from disk" : "streaming from animethemes.moe"; }
+function openModal(s) {
+  const m = document.getElementById("modal");
+  const v = videoEl(s, true);
+  m.replaceChildren(el("div", { class: "modal-box", onclick: e => e.stopPropagation() },
+    el("div", { class: "frow" }, el("strong", {}, `#${s.n} · ${s.song} — ${s.anime}`), el("button", { class: "btn ghost", onclick: closeModal }, "Close (Esc)")),
+    v, el("span", { class: "src" }, "")));
+  updateSrc(v);
+  m.hidden = false; m.onclick = closeModal;
+}
+function closeModal() { const m = document.getElementById("modal"); m.querySelectorAll("video").forEach(v => v.pause()); m.replaceChildren(); m.hidden = true; }
+
+// ---------- render helpers ----------
+function el(tag, attrs = {}, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") e.className = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (v !== false && v != null) e.setAttribute(k, v);
+  }
+  for (const k of kids.flat()) if (k != null) e.append(k.nodeType ? k : document.createTextNode(k));
+  return e;
+}
+const cover = (seed, cls) => el("img", { class: cls, src: COVERS[bySeed[seed].anime_slug] || "", alt: "", loading: "lazy" });
+
+function renderTabs() {
+  const tabs = [["match", "Match"], ["bracket", "Bracket"], ["songs", "All songs"]];
+  document.getElementById("tabs").replaceChildren(...tabs.map(([k, label]) =>
+    el("button", { class: "seg", "aria-pressed": String(view === k), onclick: () => { view = k; render(); } }, label)));
+}
+
+// ---------- Match ----------
+function renderMatch() {
+  if (!playAt) playAt = nextOpen() || [6, 0];
+  const [r, m] = playAt, id = mid(r, m), [a, b] = entrants(r, m), w = winners[id];
+  const decided = Object.keys(winners).length;
+  const out = [];
+  const c = winners[mid(6, 0)];
+  if (c) {
+    const s = bySeed[c];
+    out.push(el("div", { class: "champ" }, cover(c),
+      el("div", {}, el("div", { class: "k" }, "Champion"), el("div", { class: "t" }, `#${c} ${s.song}`), el("div", {}, `${s.anime}${s.artists ? " · " + s.artists : ""}`))));
+  }
+  out.push(el("div", { class: "stage-head" },
+    el("div", { class: "round-name" }, ROUNDS[r], el("small", {}, `Match ${m + 1} of ${64 >> r} · ${decided} of 127 decided`)),
+    el("div", { class: "hint" }, "Pick the winner after the vote. Picking it again undoes it.")));
+  out.push(el("div", { class: "progress" }, el("i", { style: `width:${decided / 127 * 100}%` })));
+  if (!a || !b) {
+    out.push(el("div", { class: "empty" }, "This match is waiting on the previous round."));
+  } else {
+    const fighter = (seed, side, key) => {
+      const s = bySeed[seed];
+      const slot = el("div", { class: "player-ph" }, el("button", { class: "btn ghost", onclick: () => { const v = videoEl(s, true); slot.replaceWith(v); updateSrc(v); } }, `▶ Play ${s.slug}`));
+      return el("section", { class: ["fighter", side, w ? (w === seed ? "won" : "lost") : ""].join(" "), "aria-label": `${s.song} from ${s.anime}` },
+        el("div", { class: "media" }, cover(seed, "cover"),
+          el("div", { style: "display:flex;flex-direction:column;gap:6px;min-width:0" },
+            el("div", { class: "bignum" }, `#${seed}`),
+            el("div", { class: "ftitle" }, s.song),
+            el("div", { class: "fanime" }, s.anime),
+            el("div", { class: "fartist" }, s.artists || "Artist not listed"),
+            el("div", {}, el("span", { class: "kind " + s.type }, `${s.slug} · ${s.year}`)))),
+        slot, el("span", { class: "src" }, ""),
+        el("div", { class: "frow" },
+          el("button", { class: "btn pick", onclick: () => pickWinner(r, m, seed) }, w === seed ? "Undo pick" : `#${seed} advances`),
+          el("span", { class: "kbd" }, `key ${key}`)));
+    };
+    out.push(el("div", { class: "stage" }, fighter(a, "A", "1"), el("div", { class: "vs", "aria-hidden": "true" }, "VS"), fighter(b, "B", "2")));
+  }
+  const flat = [...allMatches()], i = flat.findIndex(([x, y]) => x === r && y === m);
+  out.push(el("div", { class: "stage-nav" },
+    el("button", { class: "btn ghost", disabled: i === 0, onclick: () => { playAt = flat[i - 1]; save(); render(); } }, "← Previous match"),
+    el("button", { class: "btn", disabled: !nextOpen(), onclick: () => { playAt = nextOpen(playAt) || playAt; save(); render(); } }, "Next open match"),
+    el("button", { class: "btn ghost", disabled: i === flat.length - 1, onclick: () => { playAt = flat[i + 1]; save(); render(); } }, "Next match →")));
+  return out;
+}
+
+// ---------- Bracket ----------
+const REGIONS = [
+  { label: "Region 1", r0: 0, r1: 4, m0: 0, n: 16 },
+  { label: "Region 2", r0: 0, r1: 4, m0: 16, n: 16 },
+  { label: "Region 3", r0: 0, r1: 4, m0: 32, n: 16 },
+  { label: "Region 4", r0: 0, r1: 4, m0: 48, n: 16 },
+  { label: "Finals", r0: 4, r1: 6, m0: 0, n: 4 },
+  { label: "Whole bracket", r0: 0, r1: 6, m0: 0, n: 64 },
+];
+function renderBracket() {
+  const R = REGIONS[region], cols = R.r1 - R.r0 + 1, champ = R.r1 === 6;
+  const tree = el("div", { class: "tree", style: `grid-template-columns:repeat(${cols + (champ ? 1 : 0)},max-content);grid-template-rows:auto repeat(${R.n},80px)` });
+  for (let k = 0; k < cols; k++) tree.append(el("div", { class: "colhead", style: `grid-column:${k + 1};grid-row:1` }, ROUNDS[R.r0 + k]));
+  if (champ) tree.append(el("div", { class: "colhead", style: `grid-column:${cols + 1};grid-row:1` }, "Champion"));
+  const now = playAt && mid(...playAt);
+  for (let k = 0; k < cols; k++) {
+    const r = R.r0 + k, span = 1 << k, count = R.n >> k, start = R.m0 >> k;
+    for (let j = 0; j < count; j++) {
+      const m = start + j, id = mid(r, m), w = winners[id];
+      const line = seed => {
+        if (!seed) return el("div", { class: "be tbd" }, el("span"), el("span", { class: "s" }, ""), el("span", { class: "n" }, "TBD"));
+        const s = bySeed[seed];
+        return el("div", { class: `be ${w ? (w === seed ? "w" : "l") : ""}`, title: `${s.song} · ${s.anime}` },
+          cover(seed), el("span", { class: "s" }, seed), el("span", { class: "n" }, s.song));
+      };
+      const [a, b] = entrants(r, m);
+      tree.append(el("div", { class: `cell ${k ? "join" : ""}`, style: `grid-column:${k + 1};grid-row:${j * span + 2} / span ${span}` },
+        el("button", { class: `bm ${now === id ? "now" : ""}`, "aria-label": `Open ${ROUNDS[r]} match ${m + 1}`, onclick: () => { playAt = [r, m]; view = "match"; save(); render(); } },
+          line(a), line(b))));
+    }
+  }
+  if (champ) {
+    const c = winners[mid(6, 0)];
+    tree.append(el("div", { class: "cell join champcell", style: `grid-column:${cols + 1};grid-row:2 / span ${R.n}` },
+      el("div", { class: "champbox" }, el("div", { class: "k" }, "CHAMPION"),
+        c ? [cover(c), el("strong", {}, `#${c} ${bySeed[c].song}`), el("span", { class: "hint" }, bySeed[c].anime)] : el("span", { class: "hint" }, "Not decided yet"))));
+  }
+  return [
+    el("div", { class: "toolbar" },
+      el("div", { style: "display:flex;flex-wrap:wrap;gap:6px" }, ...REGIONS.map((x, i) =>
+        el("button", { class: "seg small", "aria-pressed": String(region === i), onclick: () => { region = i; render(); } }, x.label))),
+      el("div", { class: "hint" }, "Click any match to open it.")),
+    el("div", { class: "treewrap" }, tree)
+  ];
+}
+
+// ---------- All songs ----------
+function renderSongs() {
+  const out = eliminated(), champ = winners[mid(6, 0)];
+  const raw = query.trim(), q = raw.toLowerCase(), asNum = /^#?\d{1,3}$/.test(raw) ? Number(raw.replace("#", "")) : null;
+  const rows = SONGS.filter(s => (asNum != null ? s.n === asNum : !q || [s.song, s.anime, s.artists].join(" ").toLowerCase().includes(q))
+    && (gFilter === "all" || (gFilter === "alive") === !out.has(s.n)));
+  const input = el("input", { type: "search", id: "q", placeholder: "Number, song, anime or artist", value: query, "aria-label": "Search songs", style: "max-width:340px" });
+  input.addEventListener("input", e => { query = e.target.value; const pos = e.target.selectionStart; render(); const i = document.getElementById("q"); i.focus(); i.setSelectionRange(pos, pos); });
+  return [
+    el("div", { class: "toolbar" }, input,
+      el("div", { style: "display:flex;gap:6px;flex-wrap:wrap" }, ...[["all", "All 128"], ["alive", `Still in (${128 - out.size})`], ["out", `Out (${out.size})`]].map(([k, l]) =>
+        el("button", { class: "seg small", "aria-pressed": String(gFilter === k), onclick: () => { gFilter = k; render(); } }, l)))),
+    rows.length ? el("div", { class: "gallery" }, ...rows.map(s => {
+      const o = out.has(s.n), isChamp = champ === s.n;
+      return el("article", { class: `card ${o ? "out" : ""}` },
+        el("div", { class: "img" }, cover(s.n), el("span", { class: "tag" }, `#${s.n}`),
+          el("span", { class: `st ${isChamp ? "champ" : o ? "out" : ""}` }, isChamp ? "Champion" : o ? `Out · ${SHORT[out.get(s.n)]}` : "Still in")),
+        el("div", { class: "body" },
+          el("div", { class: "sg" }, s.song), el("div", { class: "an" }, s.anime), el("div", { class: "ar" }, s.artists || "Artist not listed"),
+          el("div", { class: "foot" }, el("button", { class: "watch", onclick: () => openModal(s) }, "Play"), el("span", { class: "kind " + s.type }, `${s.slug} · ${s.year}`))));
+    })) : el("div", { class: "empty" }, "No songs match that search.")
+  ];
+}
+
+function render() {
+  document.querySelectorAll("#view video").forEach(v => v.pause());
+  renderTabs();
+  const v = view === "bracket" ? renderBracket() : view === "songs" ? renderSongs() : renderMatch();
+  document.getElementById("view").replaceChildren(...v);
+  const cr = currentRound();
+  document.getElementById("status").replaceChildren(
+    el("div", {}, "Now: ", el("b", {}, cr > 6 ? "Finished" : ROUNDS[cr])),
+    el("div", { style: "display:flex;gap:6px" },
+      el("button", { class: "btn ghost", onclick: exportBracket }, "Save backup"),
+      el("button", { class: "btn ghost", onclick: () => document.getElementById("importFile").click() }, "Load backup"),
+      el("button", { class: "btn ghost", onclick: () => { if (confirm("Clear every result and start the bracket over?")) { winners = {}; playAt = null; save(); render(); } } }, "Reset")));
+}
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") return closeModal();
+  if (view !== "match" || !playAt || e.target.closest?.("input") || !document.getElementById("modal").hidden) return;
+  const [a, b] = entrants(...playAt);
+  if (!a || !b) return;
+  if (e.key === "1") pickWinner(...playAt, a);
+  if (e.key === "2") pickWinner(...playAt, b);
+});
+
+load();
+render();
+</script>
+</body></html>

@@ -1,0 +1,3 @@
+# build output + ~6 GB of downloaded videos
+dist/
+__pycache__/

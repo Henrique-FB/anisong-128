@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Anisong 128</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/*__CSS__*/
+.top{display:flex;flex-direction:column;gap:12px;position:sticky;top:0;background:var(--bg);padding-block:10px;z-index:5;border-bottom:1px solid var(--line-soft)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.count{font:12px var(--mono);color:var(--muted)}
+.card.hit{border-color:var(--a);box-shadow:0 0 0 2px var(--a-soft)}
+.card .img{cursor:pointer}
+.modal-box .meta{display:flex;flex-direction:column;gap:2px;min-width:0}
+.modal-box .meta strong{font-family:var(--display);font-weight:400;font-size:clamp(17px,2.4vw,22px);line-height:1.2;overflow-wrap:anywhere}
+.modal-box .meta span{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+</style>
+</head><body>
+<div class="wrap">
+  <header>
+    <h1>ANISONG <span>128</span></h1>
+    <p class="sub">Every song in tonight's bracket. When the stream shows a number, type it here to find the song, then press Play to watch it.</p>
+  </header>
+  <div class="top">
+    <input type="search" id="q" placeholder="Type a number (42) or a song, anime or artist" aria-label="Search songs" autocomplete="off">
+    <div class="row">
+      <div style="display:flex;gap:6px;flex-wrap:wrap" id="kinds"></div>
+      <span class="count" id="count"></span>
+    </div>
+  </div>
+  <main id="grid"></main>
+</div>
+<div class="modal" id="modal" hidden></div>
+
+<script>
+const SONGS = /*__SONGS__*/;
+const COVERS = /*__COVERS__*/;
+const REMOTE = "https://v.animethemes.moe/";
+let kind = "all";
+const norm = s => (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase();
+for (const s of SONGS) s.hay = norm([s.song, s.anime, s.artists, s.slug, s.year].join(" "));
+const pageUrl = s => `https://animethemes.moe/anime/${s.anime_slug}/${s.slug}`;
+
+function el(tag, attrs = {}, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (v != null) e.setAttribute(k, v);
+  }
+  for (const k of kids.flat()) if (k != null) e.append(k.nodeType ? k : document.createTextNode(k));
+  return e;
+}
+
+function openPlayer(s) {
+  const m = document.getElementById("modal");
+  const v = el("video", { class: "player", controls: "", autoplay: "", playsinline: "", preload: "auto", src: REMOTE + s.video });
+  const note = el("span", { class: "src" }, "Loading from AnimeThemes. Big videos can take a few seconds to start.");
+  v.addEventListener("playing", () => note.textContent = "");
+  v.addEventListener("error", () => note.replaceChildren("This video didn't load. ", el("a", { href: pageUrl(s), target: "_blank", rel: "noopener" }, "Open it on AnimeThemes"), "."));
+  m.replaceChildren(el("div", { class: "modal-box", role: "dialog", "aria-modal": "true", "aria-label": s.song, onclick: e => e.stopPropagation() },
+    el("div", { class: "frow" },
+      el("div", { class: "meta" }, el("strong", {}, `#${s.n} · ${s.song}`), el("span", {}, `${s.anime} · ${s.slug}${s.artists ? " · " + s.artists : ""}`)),
+      el("button", { class: "btn ghost", type: "button", onclick: closePlayer }, "Close (Esc)")),
+    v, note));
+  m.hidden = false; m.onclick = closePlayer;
+}
+function closePlayer() {
+  const m = document.getElementById("modal");
+  m.querySelectorAll("video").forEach(v => { v.pause(); v.removeAttribute("src"); v.load(); });
+  m.replaceChildren(); m.hidden = true;
+}
+document.addEventListener("keydown", e => { if (e.key === "Escape") closePlayer(); });
+
+function card(s, hit) {
+  return el("article", { class: "card" + (hit ? " hit" : ""), id: "n" + s.n },
+    el("div", { class: "img", onclick: () => openPlayer(s) }, el("img", { src: COVERS[s.anime_slug] || "", alt: "", loading: "lazy" }), el("span", { class: "tag" }, "#" + s.n)),
+    el("div", { class: "body" },
+      el("div", { class: "sg" }, s.song),
+      el("div", { class: "an" }, s.anime),
+      el("div", { class: "ar" }, s.artists || "Artist not listed"),
+      el("div", { class: "foot" },
+        el("button", { class: "watch", type: "button", onclick: () => openPlayer(s) }, "Play"),
+        el("span", { class: "kind " + s.type }, `${s.slug} · ${s.year}`))));
+}
+function render() {
+  const raw = document.getElementById("q").value.trim();
+  const q = norm(raw), asNum = /^#?\d{1,3}$/.test(raw) ? Number(raw.replace("#", "")) : null;
+  let rows = SONGS.filter(s => kind === "all" || s.type === kind);
+  if (asNum != null) rows = rows.filter(s => s.n === asNum || String(s.n).startsWith(String(asNum)));
+  else if (q) rows = rows.filter(s => q.split(/\s+/).every(w => s.hay.includes(w)));
+  document.getElementById("count").textContent = `${rows.length} of ${SONGS.length}`;
+  document.getElementById("grid").replaceChildren(rows.length
+    ? el("div", { class: "gallery" }, rows.map(s => card(s, asNum === s.n)))
+    : el("div", { class: "empty" }, `Nothing matches "${raw}". Try part of the anime name or the song number.`));
+}
+document.getElementById("kinds").append(...[["all", "All"], ["OP", "Openings"], ["ED", "Endings"]].map(([k, l]) => {
+  const b = el("button", { class: "seg small", "aria-pressed": String(k === kind), type: "button" }, l);
+  b.addEventListener("click", () => { kind = k; document.querySelectorAll("#kinds .seg").forEach(x => x.setAttribute("aria-pressed", String(x === b))); render(); });
+  return b;
+}));
+document.getElementById("q").addEventListener("input", render);
+render();
+</script>
+</body></html>

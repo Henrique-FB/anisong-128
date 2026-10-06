@@ -1,0 +1,130 @@
+# Hand-curated 128: one song per franchise. Format: <AnimeThemes anime name or unique prefix> | <theme slug>
+# Seeds are assigned by AnimeThemes playlist count (scripts/build_songs.py). Edit freely and rebuild.
+Chainsaw Man | OP1
+[Oshi no Ko] | OP1
+Fullmetal Alchemist: Brotherhood | OP1
+Dandadan | OP1
+Neon Genesis Evangelion | OP1
+Steins;Gate | OP1
+Code Geass: Hangyaku no Lelouch | OP1
+Shingeki no Kyojin | OP1
+Ousama Ranking | OP2
+Sword Art Online | OP1
+Sousou no Frieren | OP1
+BLEACH | OP1
+Death Parade | OP1
+Kusuriya no Hitorigoto | OP1
+JoJo no Kimyou na Bouken | OP2
+Mob Psycho 100 II | OP1
+Bocchi the Rock! | OP1
+Death Note | OP1
+Angel Beats! | OP1
+Boku dake ga Inai Machi | OP1
+Tokyo Ghoul | OP1
+Kimetsu no Yaiba | OP1
+Serial Experiments Lain | OP1
+Naruto: Shippuuden | OP3
+Enen no Shouboutai | OP1
+Shigatsu wa Kimi no Uso | OP1
+Jujutsu Kaisen | OP1
+Mashle 2nd Season | OP1
+Noragami Aragoto | OP1
+Bakemonogatari | OP4
+Soul Eater | OP1
+No Game No Life | OP1
+Kaguya-sama wa Kokurasetai?: | OP1
+Boku no Hero Academia 2nd Season | OP1
+Cowboy Bebop | OP1
+One Punch Man | OP1
+Mahou Shoujo Madoka★Magica | OP1
+Black Clover (TV) | OP10
+Vinland Saga | OP1
+Tengen Toppa Gurren Lagann | OP1
+Re:Zero kara Hajimeru Isekai Seikatsu | OP1
+Domestic na Kanojo | OP1
+Spy x Family | OP1
+Beastars | OP1
+Mirai Nikki | OP1
+Dororo | OP1
+Jigokuraku | OP1
+Fate/Zero | OP1
+Yakusoku no Neverland | OP1
+Kiseijuu: Sei no Kakuritsu | OP1
+Kill la Kill | OP2
+Kekkai Sensen | ED1
+Zom 100 | OP1
+86 2nd Season | OP1
+Durarara!! | OP1
+Hunter x Hunter | OP1 | departure!
+Ao no Exorcist | OP1
+Dungeon Meshi | OP1
+Paripi Koumei | OP1
+Guilty Crown | OP2
+One Piece | OP1
+Seishun Buta Yarou wa Bunny Girl | OP1
+Fairy Tail | OP1 | Snow Fairy
+Boku no Kokoro no Yabai Yatsu Season 2 | OP1
+Psycho Pass | OP1
+Higurashi no Naku Koro ni | OP1
+Toradora! | OP1
+Ansatsu Kyoushitsu (TV) 2nd Season | OP2
+Baccano! | OP1
+Kobayashi-san Chi no Maid Dragon | OP1
+Violet Evergarden | OP1
+Dr. Stone | OP1
+Ano Hi Mita Hana no Namae wo Bokutachi | ED2
+Haikyuu!! Second Season | OP2
+Kono Subarashii Sekai ni Shukufuku wo! | OP1 | fantastic dreamer
+Overlord | OP1
+Mushoku Tensei II | OP1 | spiral
+K-On! | ED1
+Nichijou | OP1
+Lucky☆Star | OP1
+Clannad: After Story | OP1
+Elfen Lied | OP1
+Chi.: Chikyuu no Undou ni Tsuite | OP1
+Yofukashi no Uta | ED1
+Gintama': Enchousen | OP3
+Cyberpunk: Edgerunners | OP1
+NHK ni Youkoso! | OP1
+Ookami to Koushinryou | OP1
+Samurai Champloo | OP1
+Nanatsu no Taizai | OP1
+Great Teacher Onizuka | OP1
+3-gatsu no Lion | OP1
+Darling in the FranXX | OP1
+Hyouka | OP1
+GIRLS BAND CRY | OP1
+Ao no Hako | OP1
+Toaru Kagaku no Railgun | OP1
+Suzumiya Haruhi no Yuuutsu | ED1 | Hare Hare Yukai
+Tokyo Revengers | OP1
+Make Heroine ga Oosugiru! | OP1
+Black Lagoon | OP1
+Cardcaptor Sakura | OP1
+Yuu☆Yuu☆Hakusho | OP1
+Sono Bisque Doll wa Koi wo Suru | OP1
+Odd Taxi | OP1
+Made in Abyss | OP2
+Digimon Adventure | OP1
+Another | OP1
+Lycoris Recoil | ED1
+Dragon Ball Z | OP1
+Houseki no Kuni | OP1
+Berserk | OP1 | Tell Me Why
+Eureka Seven | OP1
+FLCL | ED1
+Kimi no Na wa. | OP1
+Ping Pong The Animation | OP1
+Bishoujo Senshi Sailor Moon | OP1
+Banana Fish | OP1
+Ghost in the Shell: Stand Alone Complex | OP1 | Inner Universe
+Rurouni Kenshin: Meiji Kenkaku Romantan | OP1 | Sobakasu
+Trigun | OP1
+Nana | OP1
+Shinsekai yori | ED1
+YURI!!! on ICE | OP1
+Yojouhan Shinwa Taikei | OP1
+Aldnoah.Zero | ED2
+Kaijuu 8-gou | OP1
+Sora yori mo Tooi Basho | OP1
